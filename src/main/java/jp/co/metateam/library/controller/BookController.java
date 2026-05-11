@@ -24,7 +24,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Controller
 public class BookController {
-
     private final BookMstService bookMstService;
 
     @Autowired
@@ -35,14 +34,12 @@ public class BookController {
     /**
      * 一覧画面
      */
-
     @GetMapping("/book/index")
     public String index(Model model) {
         // 書籍を全件取得
         List<BookMstDto> bookMstList = this.bookMstService.findAvailableWithStockCount();
 
         model.addAttribute("bookMstList", bookMstList);
-
         return "book/index";
     }
 
@@ -54,7 +51,6 @@ public class BookController {
         if (!model.containsAttribute("bookMstDto")) {
             model.addAttribute("bookMstDto", new BookMstDto());
         }
-
         return "book/add";
     }
 
@@ -68,9 +64,7 @@ public class BookController {
             RedirectAttributes redirectAttributes,
             Model model) {
 
-        //
         // 入力チェック
-        //
 
         // バリデーションエラー判定
         if (bindingResult.hasErrors()) {
@@ -82,9 +76,7 @@ public class BookController {
             return "book/add";
         }
 
-        //
         // ISBN重複チェック
-        //
 
         boolean existsIsbn = this.bookMstService.existsByIsbn(bookMstDto.getIsbn());
 
@@ -101,25 +93,19 @@ public class BookController {
             return "book/add";
         }
 
-        //
         // DB登録
-        //
 
         this.bookMstService.insert(bookMstDto);
 
         log.info("書籍登録完了");
 
-        //
         // 完了メッセージ
-        //
 
         redirectAttributes.addFlashAttribute(
                 "message",
                 "書籍を登録しました");
 
-        //
         // 一覧画面へ推移
-        //
 
         return "redirect:/book/index";
     }

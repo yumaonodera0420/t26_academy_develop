@@ -16,7 +16,7 @@ import lombok.Setter;
 public class BookMstDto {
     
     private Long id; 
-
+    
     /**
      * ISBN
      */

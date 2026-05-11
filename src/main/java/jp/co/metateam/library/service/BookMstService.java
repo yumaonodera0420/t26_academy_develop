@@ -31,7 +31,7 @@ public class BookMstService {
     }
 
     private final BookMstRepository bookMstRepository;
-
+    
     @Autowired
     public BookMstService(BookMstRepository bookMstRepository) {
         this.bookMstRepository = bookMstRepository;
