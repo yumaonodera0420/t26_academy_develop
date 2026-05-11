@@ -2,29 +2,41 @@ package jp.co.metateam.library.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import io.micrometer.common.util.StringUtils;
 import jp.co.metateam.library.model.BookMst;
 import jp.co.metateam.library.model.BookMstDto;
 import jp.co.metateam.library.repository.BookMstRepository;
 
 @Service
 public class BookMstService {
+    // ISBN重複チェック
+    public boolean existsByIsbn(String isbn) {
+
+        return this.bookMstRepository.existsByIsbn(isbn);
+
+    }
+
+    // 登録処理
+    public void insert(BookMstDto bookMstDto) {
+
+        BookMst book = new BookMst();
+
+        book.setIsbn(bookMstDto.getIsbn());
+        book.setTitle(bookMstDto.getTitle());
+
+        this.bookMstRepository.save(book);
+    }
 
     private final BookMstRepository bookMstRepository;
-    
+
     @Autowired
-    public BookMstService(BookMstRepository bookMstRepository){
+    public BookMstService(BookMstRepository bookMstRepository) {
         this.bookMstRepository = bookMstRepository;
     }
-    
+
     public List<BookMstDto> findAvailableWithStockCount() {
         List<BookMst> books = this.bookMstRepository.findLimitedBook();
         List<BookMstDto> bookMstDtoList = new ArrayList<BookMstDto>();
@@ -42,8 +54,5 @@ public class BookMstService {
 
         return bookMstDtoList;
     }
-    
+
 }
-
-
-
