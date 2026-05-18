@@ -1,17 +1,19 @@
 package jp.co.metateam.library.service;
-
+ 
 import java.util.ArrayList;
 import java.util.List;
-
+ 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jp.co.metateam.library.model.BookMst;
 import jp.co.metateam.library.model.BookMstDto;
 import jp.co.metateam.library.repository.BookMstRepository;
-
+ 
 @Service
 public class BookMstService {
+
     // ISBN重複チェック
     public boolean existsByIsbn(String isbn) {
 
@@ -40,7 +42,7 @@ public class BookMstService {
     public List<BookMstDto> findAvailableWithStockCount() {
         List<BookMst> books = this.bookMstRepository.findLimitedBook();
         List<BookMstDto> bookMstDtoList = new ArrayList<BookMstDto>();
-
+ 
         // 書籍の在庫数を取得
         // FIXME: 現状は書籍ID毎にDBに問い合わせている。一度のSQLで完了させたい。
         for (int i = 0; i < books.size(); i++) {
@@ -51,8 +53,19 @@ public class BookMstService {
             bookMstDto.setTitle(book.getTitle());
             bookMstDtoList.add(bookMstDto);
         }
-
+ 
         return bookMstDtoList;
     }
 
+ 
+    @Transactional
+    public void save(BookMstDto bookMstDto) {
+        BookMst entity = new BookMst(); // BookMstDtoからBookMstへの変換
+        entity.setTitle(bookMstDto.getTitle());
+        entity.setIsbn(bookMstDto.getIsbn());
+        // データベースへの保存
+        bookMstRepository.save(entity);
+    }
+ 
+ 
 }
