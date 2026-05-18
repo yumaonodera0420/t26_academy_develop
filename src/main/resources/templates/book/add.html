@@ -36,6 +36,7 @@
                             <label for="isbn">ISBN<span class="text-red asterisk">*</span></label>
                             <input class="form_input" type="text" id="isbn" name="isbn" th:field="*{isbn}"
                                 placeholder="ISBNを入力" />
+
                             <div class="error_msg" th:if="${#fields.hasErrors('isbn')}">
 
                                 <p th:errors="*{isbn}" style="color:red">

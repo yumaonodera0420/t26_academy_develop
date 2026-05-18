@@ -58,26 +58,30 @@ public class BookController {
         return "book/add";
     }
 
+
     /**
      * 登録処理
      */
     @PostMapping("/book/add")
-    public String store(
+    public String addbook(
             @Valid @ModelAttribute BookMstDto bookMstDto,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
+            BindingResult result,
             Model model) {
 
-        //
-        // 入力チェック
-        //
+        // バリデーションエラー
+        if (result.hasErrors()) {
 
-        // バリデーションエラー判定
-        if (bindingResult.hasErrors()) {
+            if (result.hasFieldErrors("title")) {
+                model.addAttribute(
+                        "errTitle",
+                        result.getFieldError("title").getDefaultMessage());
+            }
 
-            log.warn("入力チェックエラー");
-
-            model.addAttribute("bookMstDto", bookMstDto);
+            if (result.hasFieldErrors("isbn")) {
+                model.addAttribute(
+                        "errISBN",
+                        result.getFieldError("isbn").getDefaultMessage());
+            }
 
             return "book/add";
         }
@@ -85,18 +89,11 @@ public class BookController {
         //
         // ISBN重複チェック
         //
+        if (bookMstService.findByIsbn(bookMstDto.getIsbn()).isPresent()) {
 
-        boolean existsIsbn = this.bookMstService.existsByIsbn(bookMstDto.getIsbn());
-
-        // ISBNがDBに存在するか
-        if (existsIsbn) {
-
-            log.warn("ISBN重複エラー");
-
-            bindingResult.rejectValue(
-                    "isbn",
-                    "duplicate",
-                    "ISBNが重複しています");
+            model.addAttribute(
+                    "errISBN",
+                    "登録済みのISBNです");
 
             return "book/add";
         }
@@ -108,18 +105,6 @@ public class BookController {
         this.bookMstService.insert(bookMstDto);
 
         log.info("書籍登録完了");
-
-        //
-        // 完了メッセージ
-        //
-
-        redirectAttributes.addFlashAttribute(
-                "message",
-                "書籍を登録しました");
-
-        //
-        // 一覧画面へ推移
-        //
 
         return "redirect:/book/index";
     }
